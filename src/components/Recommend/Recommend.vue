@@ -1,12 +1,12 @@
 <template>
     <div class="recommend" ref="recommend">
-        <Scroll class="recommend-content" :data="discList">
+        <Scroll ref="scroll" class="recommend-content" :data="discList">
             <div>
                 <div v-if="recommends.length" class="slider-wrapper">
                     <Slider>
                         <div v-for="item in recommends">
                             <a :href="item.linkUrl">
-                                <img class="needClick" :src="item.picUrl">
+                                <img class="needsClick" @load="loadImage" :src="item.picUrl">
                             </a>
                         </div>
                     </Slider>
@@ -16,7 +16,7 @@
                     <ul>
                         <li v-for="item in discList" class="item">
                             <div class="icon">
-                                <img :src="item.imgurl" width="60" height="60">
+                                <img v-lazy="item.imgurl" width="60" height="60">
                             </div>
                             <div class="text">
                                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -26,11 +26,15 @@
                     </ul>
                 </div>
             </div>
+            <div class="loading-container" v-show="!discList.length">
+                <Loading></Loading>
+            </div>
         </Scroll>
     </div>
 </template>
 
 <script type="text/ecmacript-6">
+import Loading from '@/base/Loading/Loading'
 import Scroll from '@/base/Scroll/Scroll'
 import { getRecommend, getDiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
@@ -61,11 +65,18 @@ export default {
                     this.discList = res.data.list
                 }
             })
+        },
+        loadImage () {
+            if(!this.checkLoaded) {
+                this.$refs.scroll.refresh();
+                this.checkLoaded = true
+            }
         }
     },
     components : {
         Slider,
-        Scroll
+        Scroll,
+        Loading
     }
 }
 </script>
