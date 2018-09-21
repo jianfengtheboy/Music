@@ -12,7 +12,7 @@ import '@/common/stylus/index.styl'
 
 FastClick.attach(document.body)
 Vue.use(VueLazyLoad, {
-    loading : require('common/image/default.png')
+    loading : require('./components/MHeader/logo@2x.png')
 })
 
 Vue.config.productionTip = false
@@ -22,6 +22,5 @@ new Vue({
   el: '#app',
   router,
   store,
-  template: '<App/>',
-  components: { App }
+  render : h => h(App)
 })

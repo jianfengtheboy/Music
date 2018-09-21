@@ -1,10 +1,11 @@
 <template>
-    <div id="app">
+    <div id="app" @touchmove.prevent>
         <MHeader></MHeader>
         <Tab></Tab>
         <keep-alive>
             <router-view/>
         </keep-alive>
+        <!--播放器全局组件-->
         <Player></Player>
     </div>
 </template>
@@ -15,6 +16,7 @@ import Tab from 'components/Tab/Tab'
 import Player from 'components/Player/Player'
 
 export default {
+    name : 'app',
     components : {
         MHeader,
         Tab,
@@ -23,8 +25,4 @@ export default {
 }
 </script>
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
-@import "common/stylus/variable";
-#app
-  color:$color-theme
-</style>
+<style scoped lang="stylus" rel="stylesheet/stylus"></style>
