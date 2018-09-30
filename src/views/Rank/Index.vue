@@ -4,10 +4,10 @@
             <ul>
                 <li class="item" v-for="item in topList" :key="item.key" @click="jump(item)">
                     <div class="icon">
-                        <img width="100" height="100" v-lazy="item.picUrl" alt="">
+                        <img width="100" height="100" v-lazy="item.picUrl">
                     </div>
                     <ul class="songlist">
-                        <li class="song" v-for="(song,index) in item.songList" :key="song.key">
+                        <li class="song" v-for="(song, index) in item.songList" :key="song.key">
                             <span>{{index + 1}}</span>
                             <span>{{song.songname}} - {{song.singername}}</span>
                         </li>
@@ -41,7 +41,7 @@ export default {
         this._getTopList()
     },
     methods : {
-        handlePlayList () {
+        handlePlayList (playlist) {
             const bottom = playlist.length > 0 ? '60px' : ''
             this.$refs.rank.style.bottom = bottom
             this.$refs.topList.refresh()

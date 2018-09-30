@@ -27,7 +27,7 @@ export default {
         this._getSingerList()
     },
     methods : {
-        handlePlayList  (playlist) {
+        handlePlayList (playlist) {
             const bottom = playlist.length > 0 ? '60px' : ''
             this.$refs.singer.style.bottom = bottom
             this.$refs.list.refresh()
@@ -99,8 +99,8 @@ export default {
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
 .singer
-  position : fixed
-  top : 88px
-  bottom : 0
-  width : 100%
+    position : fixed
+    top : 88px
+    bottom : 0
+    width : 100%
 </style>

@@ -6,7 +6,7 @@
         <h1 class="title" v-html="title"></h1>
         <div class="bg-image" :style="bgStyle" ref="bgImage">
             <div class="play-wrapper">
-                <div class="play" v-show="songs.length > 0" ref="playBtn">
+                <div ref="playBtn" v-show="songs.length > 0" class="play" @click="random">
                     <i class="icon-play"></i>
                     <span class="text">随机播放全部</span>
                 </div>
@@ -14,9 +14,14 @@
             <div class="filter" ref="filter"></div>
         </div>
         <div class="bg-layer" ref="layer"></div>
-        <Scroll @scroll="scroll" :probeType="probeType" :listenScroll="listenScroll" :data="songs" class="list" ref="list">
+        <Scroll @scroll="scroll"
+                :probe-type="probeType"
+                :listen-scroll="listenScroll"
+                :data="songs"
+                class="list"
+                ref="list">
             <div class="song-list-wrapper">
-                <SongList :songs="songs" @select="selectItem"></SongList>
+                <SongList :songs="songs" :rank="rank" @select="selectItem"></SongList>
             </div>
             <div class="loading-container" v-show="!songs.length">
                 <Loading></Loading>
@@ -26,17 +31,19 @@
 </template>
 
 <script type="text/ecmascript-6">
-import Scroll from 'base/Scroll/Scroll.vue'
+import Scroll from 'base/Scroll/Scroll'
 import SongList from 'base/SongList/SongList'
-import Loading from 'base/Loading/Loading.vue'
+import Loading from 'base/Loading/Loading'
 import {prefixStyle} from 'common/js/dom'
 import {mapActions} from 'vuex'
+import { playListMixin } from 'common/js/mixin'
 
 const RESERVED_HEIGHT = 40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 
 export default {
+    mixins: [playListMixin],
     props : {
         bgImage : {
             type : String,
@@ -49,6 +56,10 @@ export default {
         title : {
             type : String,
             default : ''
+        },
+        rank : {
+            type : Boolean,
+            default : false
         }
     },
     data () {
@@ -67,10 +78,15 @@ export default {
     },
     mounted () {
         this.imageHeight = this.$refs.bgImage.clientHeight
-        this.minTranslateY = - this.imageHeight + RESERVED_HEIGHT
+        this.minTransalteY = -this.imageHeight + RESERVED_HEIGHT
         this.$refs.list.$el.style.top = `${this.imageHeight}px`
     },
     methods : {
+        handlePlayList (playlist) {
+            const bottom = playlist.length > 0 ? '60px' : ''
+            this.$refs.list.$el.style.bottom = bottom
+            this.$refs.list.refresh()
+        },
         back () {
             this.$router.back()
         },
@@ -79,42 +95,45 @@ export default {
         },
         selectItem(item, index) {
             this.selectPlay({
-                list: this.songs,
+                list : this.songs,
                 index
             })
         },
+        random () {
+            this.randomPlay({
+                list : this.songs
+            })
+        },
         ...mapActions([
-            'selectPlay'
+            'selectPlay',
+            'randomPlay'
         ])
     },
-    watch : {
-        scrollY(newY) {
-            let translateY = Math.max(this.minTranslateY,newY)
-            let zIndex = 0
+    watch: {
+        scrollY(newVal) {
+            let translateY = Math.max(this.minTransalteY, newVal)
             let scale = 1
-            let blur = 0
-            this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
-            const percent = Math.abs(newY / this.imageHeight)
-            if(newY > 0) {
+            let zIndex = 0
+            const percent = Math.abs(newVal / this.imageHeight)
+            if (newVal > 0) {
                 scale = 1 + percent
                 zIndex = 10
-            }else{
-                blur = Math.min(20 * percent,20)
             }
-            this.$refs.filter.style[backdrop] = `blur(${blur}px)`
-            if(newY < this.minTranslateY) {
+            this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
+            if (newVal < this.minTransalteY) {
                 zIndex = 10
                 this.$refs.bgImage.style.paddingTop = 0
                 this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
                 this.$refs.playBtn.style.display = 'none'
-            }else{
+            } else {
                 this.$refs.bgImage.style.paddingTop = '70%'
                 this.$refs.bgImage.style.height = 0
                 this.$refs.playBtn.style.display = ''
             }
-            this.$refs.bgImage.style.zIndex = zIndex
+            // 下拉背景图片伸缩
             this.$refs.bgImage.style[transform] = `scale(${scale})`
-        }
+            this.$refs.bgImage.style.zIndex = zIndex
+      }
     },
     components : {
         Scroll,
@@ -155,7 +174,7 @@ export default {
       no-wrap()
       text-align: center
       line-height: 40px
-      font-size: $font-size-large
+      font-size: $font-size-medium-x
       color: $color-text
     .bg-image
       position: relative

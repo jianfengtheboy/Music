@@ -67,13 +67,11 @@ export default {
     methods : {
         _setSliderWidth (isResize) {
             this.children = this.$refs.sliderGroup.children
-
             let width = 0
             let sliderWidth = this.$refs.slider.clientWidth
             for (let i = 0; i < this.children.length; i ++) {
                 let child = this.children[i]
                 addClass(child, 'slider-item')
-
                 child.style.width = sliderWidth + 'px'
                 width += sliderWidth
             }
@@ -99,6 +97,7 @@ export default {
                 }
                 this.currentPageIndex = pageIndex
                 if (this.autoPlay) {
+                    clearTimeout(this.timer)
                     this._play()
                 }
             })
@@ -120,6 +119,9 @@ export default {
                 this.slider.goToPage(pageIndex, 0, 400)
             },this.interval)
         }
+    },
+    destroyed () {
+        clearTimeout(this.timer)
     }
 }
 </script>

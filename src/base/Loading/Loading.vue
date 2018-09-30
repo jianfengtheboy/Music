@@ -1,6 +1,6 @@
 <template>
     <div class="loading">
-        <img width="24" height="24" src="./loading.gif" alt="">
+        <img width="64" height="64" src="./loading.gif" alt="">
         <p class="desc">{{title}}</p>
     </div>
 </template>
@@ -10,7 +10,7 @@ export default {
     props : {
         title : {
             type : String,
-            default : '正在载入...'
+            default : '正在加载中...'
         }
     }
 }
@@ -20,10 +20,10 @@ export default {
 @import "~common/stylus/variable"
 
 .loading
-  width : 100%
-  text-align : center
-  .desc
-    line-height : 20px
-    font-size : $font-size-small
-    color : $color-text-l
+    width: 100%
+    text-align: center
+    .desc
+        line-height: 20px
+        font-size $font-size-small
+        color: $color-text-l
 </style>
