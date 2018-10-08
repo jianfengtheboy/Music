@@ -114,11 +114,11 @@ export const searchMixin = {
             this.$refs.searchBox.setQuery(query)
         },
         saveSearch () {
-            this.saveFavoriteList(this.query)
+            this.saveSearchHistory(this.query)
         },
         ...mapActions([
             'saveSearchHistory',
-            'deleteFavoriteList'
+            'deleteSearchHistory'
         ])
     }
 }

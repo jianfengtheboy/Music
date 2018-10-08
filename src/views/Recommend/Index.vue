@@ -70,7 +70,7 @@ export default {
             })
         },
         _getDiscList() {
-            getDiscList().then(res => {
+            getDiscList().then((res) => {
                 if(res.code === ERR_OK) {
                     this.discList = res.data.list
                 }

@@ -361,25 +361,114 @@ export default {
             this.touch.startY = touch.pageY
         },
         middleTouchMove (e) {
-
+            //没有touchstart 返回
+            if (!this.touch.initiated) {
+                return
+            }
+            const touch = e.touches[0]
+            const deltaX = touch.pageX - this.touch.startX
+            const deltaY = touch.pageY - this.touch.startY
+            //y轴距离大于x轴距离 => 纵向滚动 => 返回
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                return
+            }
+            if (!this.touch.moved) {
+                this.touch.moved = true
+            }
+            const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+            //滚动的距离  最大是0
+            const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+            this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+            this.$refs.lyriclist.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+            this.$refs.lyriclist.$el.style[transitionDuration] = 0
+            this.$refs.middleL.style.opacity = 1 - this.touch.percent
+            this.$refs.middleL.style[transitionDuration] = 0
         },
         middleTouchEnd () {
-
+            if (!this.touch.moved) {
+                return
+            }
+            let offsetWidth
+            let opacity
+            if (this.currentShow === 'cd') {
+                if (this.touch.percent > 0.1) {
+                    offsetWidth = -window.innerWidth
+                    opacity = 0
+                    this.currentShow = 'lyric'
+                } else {
+                    offsetWidth = 0
+                    opacity = 1
+                }
+            } else {
+                if (this.touch.percent < 0.9) {
+                    offsetWidth = 0
+                    this.currentShow = 'cd'
+                    opacity = 1
+                } else {
+                    offsetWidth = -window.innerWidth
+                    opacity = 0
+                }
+            }
+            //动画缓冲时间
+            const time = 300
+            this.$refs.lyriclist.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+            this.$refs.lyriclist.$el.style[transitionDuration] = `${time}ms`
+            this.$refs.middleL.style.opacity = opacity
+            this.$refs.middleL.style[transitionDuration] = `${time}ms`
+            this.touch.initiated = false
         },
-        enter () {
-
+        //动画钩子
+        enter (el, done) {
+            const {x, y, scale} = this._getPosAndScale()
+            let animation = {
+                0 : {
+                    transform : `translate3d(${x}px,${y}px,0) scale(${scale})`
+                },
+                60 : {
+                    transform : `translate3d(0,0,0) scale(1.1)`
+                },
+                100 : {
+                    transform : `translate3d(0,0,0) scale(1)`
+                }
+            }
+            animations.registerAnimation({
+                name : 'move',
+                animation,
+                presets : {
+                    duration : 400,
+                    easing : 'linear'
+                }
+            })
+            animations.runAnimation(this.$refs.cdWrapper, 'move', done)
         },
         afterEnter () {
-
+            animations.unregisterAnimation('move')
+            this.$refs.cdWrapper.style.animation = ''
         },
-        leave () {
-
+        leave (el, done) {
+            this.$refs.cdWrapper.style.transition = 'all 0.4s'
+            const {x, y, scale} = this._getPosAndScale()
+            this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+            this.$refs.cdWrapper.addEventListener('transitionend', done)
         },
         afterLeave () {
-
+            this.$refs.cdWrapper.style.transition = ''
+            this.$refs.cdWrapper.style[transform] = ''
         },
         _getPosAndScale () {
-
+            const targetWidth = 40
+            const paddingLeft = 40
+            const paddingBottom = 30
+            const paddingTop = 80
+            const width = window.innerWidth * 0.8
+            const scale = targetWidth / width
+            const x = -(window.innerWidth / 2 - paddingLeft)
+            const y = window.innerWidth - paddingTop - width / 2 - paddingBottom
+            return {
+                x,
+                y,
+                scale
+            }
         },
         showPlayList () {
             this.$refs.playList.show()
@@ -437,12 +526,12 @@ export default {
           text-align: center
           no-wrap()
           font-size: $font-size-large
-          color: $color-text
+          color: $color-theme
         .subtitle
           line-height: 20px
           text-align: center
           font-size: $font-size-medium
-          color: $color-text
+          color:rgba(255, 205, 50, .8)
       .middle
         position: fixed
         width: 100%
@@ -480,7 +569,6 @@ export default {
                 width: 100%
                 height: 100%
                 border-radius: 50%
-
           .playing-lyric-wrapper
             width: 80%
             margin: 30px auto 0 auto
@@ -490,7 +578,7 @@ export default {
               height: 20px
               line-height: 20px
               font-size: $font-size-medium
-              color: $color-text-l
+              color: $color-theme
         .middle-r
           display: inline-block
           vertical-align: top
@@ -504,10 +592,10 @@ export default {
             text-align: center
             .text
               line-height: 32px
-              color: $color-text-l
+              color: rgba(255, 205, 50, .25)
               font-size: $font-size-medium
               &.current
-                color: $color-text
+                color: $color-theme
       .bottom
         position: absolute
         bottom: 50px
@@ -611,11 +699,11 @@ export default {
           margin-bottom: 2px
           no-wrap()
           font-size: $font-size-medium
-          color: $color-text
+          color: $color-theme
         .desc
           no-wrap()
           font-size: $font-size-small
-          color: $color-text-d
+          color: rgba(255, 205, 50, .8)
       .control
         flex: 0 0 30px
         width: 30px

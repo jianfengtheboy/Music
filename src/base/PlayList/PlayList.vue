@@ -15,7 +15,7 @@
                     <transition-group tag="ul" name="list">
                         <li class="item"
                             v-for="(item, index) in sequenceList"
-                            :key="item.key"
+                            :key="item.id"
                             @click="selectItem(item, index)"
                             ref="listItem">
                             <i class="current" :class="getCurrentIcon(item)"></i>

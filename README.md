@@ -1,27 +1,28 @@
 # Music
 
-> this is a vue test project
+> This is a music player build by Vue
 
-## 项目树
-```
+## Skills
+>
+* [x] Vue
+* [x] Vuex
+* [x] Vue-Router
+* [x] Vue-cli
+* [x] Stylus
+* [x] Axios
+* [x] ESlint
 
-
-```
+## Tree
+![](http://img.yxs.shenyecg.com/Image/y6bhb45hotnAHiR0cvt1i36U4dPl9X7o/aWteZKkx27.jpg)
 
 ## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
 ```
+git clone https://github.com/jianfengtheboy/Music.git //下载Music
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+cd SunPlayer //进入Music目录
+
+npm install (或者cnpm install) //安装依赖
+
+npm run dev (或者cnpm run dev) //服务端运行
+
+npm run build //项目打包
