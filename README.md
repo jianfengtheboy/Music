@@ -19,7 +19,7 @@
 ```
 git clone https://github.com/jianfengtheboy/Music.git //下载Music
 
-cd SunPlayer //进入Music目录
+cd Music //进入Music目录
 
 npm install (或者cnpm install) //安装依赖
 
